@@ -2,7 +2,7 @@ import './App.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Private, Public } from './layout'
 import { RouterUrl } from './routes'
-import { AdminHomepage, LoginPage } from './pages'
+import { AdminHomepage, CategoryListPage, CreateCategoryPage, CreateInventoryPage, CreateStaffPage, InventoryListPage, LoginPage, StaffListPage } from './pages'
 
 function App() {
   const router = createBrowserRouter([
@@ -17,7 +17,13 @@ function App() {
       path: RouterUrl.Login,
       element:<Private />,
       children:[
-        { path: RouterUrl.AdminDashboard, element:<AdminHomepage />}
+        { path: RouterUrl.AdminDashboard, element:<AdminHomepage />},
+        { path: RouterUrl.StaffAdd, element:<CreateStaffPage />},
+        { path: RouterUrl.StaffList, element:<StaffListPage />},
+        { path: RouterUrl.CategoryCreation, element:<CreateCategoryPage />},
+        { path: RouterUrl.CategoryList, element:<CategoryListPage />},
+        { path: RouterUrl.InventoryCreation, element:<CreateInventoryPage />},
+        { path: RouterUrl.InventoryList, element:<InventoryListPage />},
       ]
     }
   ])

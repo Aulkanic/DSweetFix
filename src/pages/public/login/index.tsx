@@ -4,19 +4,24 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import DSweetBg from '../../../assets/bg.png';
 import { auth, db } from '../../../db';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { RouterUrl } from '../../../routes';
 
 export const LoginPage = () => {
+  const navigate = useNavigate()
+  const [loading,setLoading] = useState(false)
     const onFinish = async (values: { Username: any; password: any; }) => {
         try {
           const { Username, password } = values;
-            console.log(values)
-          // Query Firestore for the user document with the given username
+          setLoading(true)
           const usersRef = collection(db, 'users');
           const q = query(usersRef, where('username', '==', Username));
           const querySnapshot = await getDocs(q);
     
           if (querySnapshot.empty) {
             message.error('User not found!');
+            setLoading(false)
             return;
           }
     
@@ -31,11 +36,10 @@ export const LoginPage = () => {
           }
     
           // Use the associated email to sign in with Firebase Authentication
-          const userCredential = await signInWithEmailAndPassword(auth, userData.email, password);
-          console.log(userCredential)
+          await signInWithEmailAndPassword(auth, userData.email, password);
+          setLoading(false)
           message.success('Login successful!');
-          console.log('User data:', userData);
-    
+          navigate(RouterUrl.AdminDashboard)
           // Additional logic, like redirecting the user, can go here
         } catch (error) {
           console.error('Login failed:', error);
@@ -80,7 +84,7 @@ export const LoginPage = () => {
               <Input.Password placeholder="Password" />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" className='bg-black w-full' htmlType="submit">
+              <Button type="primary" loading={loading} className='bg-black w-full' htmlType="submit">
                 Sign In
               </Button>
             </Form.Item>

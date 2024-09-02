@@ -1,4 +1,10 @@
 export const RouterUrl = {
     Login:'/',
-    AdminDashboard:'/Dashboard'
+    AdminDashboard:'/Dashboard',
+    StaffAdd:'/Dashboard/Staff/Create Staff',
+    StaffList:'/Dashboard/Staff/List',
+    CategoryList:'/Dashboard/Category/List',
+    CategoryCreation:'/Dashboard/Category/Add',
+    InventoryCreation:'/Dashboard/Inventory/Add',
+    InventoryList:'/Dashboard/Inventory/List',
 }

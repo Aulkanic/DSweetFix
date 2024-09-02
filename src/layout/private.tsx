@@ -8,16 +8,23 @@ import { TiGroupOutline } from "react-icons/ti";
 import { TbLayoutDashboardFilled,TbCategoryFilled,TbReportSearch } from "react-icons/tb";
 import { MdOutlineAdd, MdOutlineInventory } from "react-icons/md";
 import { GrMoney } from "react-icons/gr";
-import { LiaCartPlusSolid } from "react-icons/lia";
 import { Button, Layout, Menu, theme } from 'antd';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { RouterUrl } from '../routes';
 
 const { Header, Sider, Content } = Layout;
 
 export default function Private() {
+  const navigate = useNavigate()
     const [collapsed, setCollapsed] = useState(false);
     const {
       token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
+
+    const handleMenuClick = (key: string) => {
+      navigate(key);
+    };
+  
   return (
     <Layout className="h-max min-h-screen" >
       <Sider width={'20%'} style={{background:'#0284c7'}} className='custom-menu' trigger={null} collapsible collapsed={collapsed}>
@@ -30,9 +37,10 @@ export default function Private() {
           mode="inline"
           defaultSelectedKeys={['1']}
           style={{background:'#0284c7',color:'white'}}
+          onClick={({ key }) => handleMenuClick(key)}
           items={[
             {
-              key: '1',
+              key: RouterUrl.AdminDashboard,
               icon: <TbLayoutDashboardFilled />,
               label: 'Dashboard',
             },
@@ -43,14 +51,14 @@ export default function Private() {
               children: [
                 { key: '9', label: 'Staff',icon:<TiGroupOutline />,
                     children: [
-                        { key: '11', label: 'Staff List',icon:<BsList /> },
-                        { key: '12', label: 'Create Staff',icon:<MdOutlineAdd /> },
+                        { key: RouterUrl.StaffList, label: 'Staff List',icon:<BsList /> },
+                        { key: RouterUrl.StaffAdd, label: 'Create Staff',icon:<MdOutlineAdd /> },
                       ],
                 },
                 { key: '10', label: 'Inventory',icon:<MdOutlineInventory />,
                     children: [
-                        { key: '11', label: 'Inventory List',icon:<BsList /> },
-                        { key: '12', label: 'Add Inventory Item',icon:<MdOutlineAdd />  },
+                        { key: RouterUrl.InventoryList, label: 'Inventory List',icon:<BsList /> },
+                        { key: RouterUrl.InventoryCreation, label: 'Add Inventory Item',icon:<MdOutlineAdd />  },
                       ],
                  },
                 {
@@ -58,17 +66,8 @@ export default function Private() {
                   label: 'Category',
                   icon:<TbCategoryFilled />,
                   children: [
-                    { key: '11', label: 'Cateogry List',icon:<BsList /> },
-                    { key: '12', label: 'Add Category',icon:<MdOutlineAdd />  },
-                  ],
-                },
-                {
-                  key: 'sub4',
-                  label: 'Products',
-                  icon:<LiaCartPlusSolid />,
-                  children: [
-                    { key: '11', label: 'Product List',icon:<BsList /> },
-                    { key: '12', label: 'Add Products' ,icon:<MdOutlineAdd /> },
+                    { key: RouterUrl.CategoryList, label: 'Cateogry List',icon:<BsList /> },
+                    { key: RouterUrl.CategoryCreation, label: 'Add Category',icon:<MdOutlineAdd />  },
                   ],
                 },
               ],
@@ -106,7 +105,7 @@ export default function Private() {
             borderRadius: borderRadiusLG,
           }}
         >
-          Content
+          <Outlet />
         </Content>
       </Layout>
     </Layout>
