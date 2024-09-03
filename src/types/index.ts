@@ -30,3 +30,11 @@ export  interface Product {
     paymentMethod: string;
     timestamp: Date;
   }
+
+ export interface UserData {
+    id: string;
+    username: string;
+    email: string;
+    type: string;
+    status:string;
+  }

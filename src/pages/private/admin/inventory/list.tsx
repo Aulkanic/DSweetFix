@@ -24,7 +24,6 @@ export const InventoryListPage = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [sortOption, setSortOption] = useState<string | null>(null);
   const db = getFirestore();
 
   useEffect(() => {
@@ -66,13 +65,6 @@ export const InventoryListPage = () => {
   // Filter and sort the products based on search and sort option
   const filteredAndSortedProducts = products
     .filter((product) => product.name?.toLowerCase().includes(searchKeyword.toLowerCase()))
-    .sort((a, b) => {
-      if (sortOption === 'price-asc') return a.price - b.price;
-      if (sortOption === 'price-desc') return b.price - a.price;
-      if (sortOption === 'stock-asc') return a.stock - b.stock;
-      if (sortOption === 'stock-desc') return b.stock - a.stock;
-      return 0;
-    });
 
   // Edit Product Handler
   const handleEdit = (product: Product) => {
@@ -203,19 +195,6 @@ export const InventoryListPage = () => {
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           />
-        </Col>
-        <Col span={12}>
-          <Select
-            placeholder="Sort By"
-            value={sortOption}
-            onChange={(value) => setSortOption(value)}
-            style={{ width: '100%' }}
-          >
-            <Option value="price-asc">Price: Low to High</Option>
-            <Option value="price-desc">Price: High to Low</Option>
-            <Option value="stock-asc">Stock: Low to High</Option>
-            <Option value="stock-desc">Stock: High to Low</Option>
-          </Select>
         </Col>
       </Row>
 

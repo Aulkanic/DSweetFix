@@ -12,12 +12,14 @@ import { Avatar, Button, Layout, Menu, Popover, theme } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { RouterUrl } from '../routes';
 import { logoutAdmin } from '../zustand/store/store.provider';
+import AdminProfileModal from './AdminProfile';
 
 const { Header, Sider, Content } = Layout;
 
 export default function Private() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false); 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -35,12 +37,12 @@ export default function Private() {
 
   const popoverContent = (
     <Menu
-    style={{width:'100px'}}
+      style={{ width: '100px' }}
       onClick={({ key }) => {
         if (key === 'logout') {
           handleLogout();
         } else if (key === 'settings') {
-          navigate('/settings');
+          setIsModalVisible(true); // Show the modal when "Settings" is clicked
         }
       }}
       items={[
@@ -114,8 +116,8 @@ export default function Private() {
               key: '3',
               label: 'Analytics',
               children: [
-                { key: '1', label: 'Sales', icon: <GrMoney /> },
-                { key: '2', label: 'Reports', icon: <TbReportSearch /> },
+                { key: RouterUrl.AdminSales, label: 'Sales', icon: <GrMoney /> },
+                { key: RouterUrl.Reports, label: 'Reports', icon: <TbReportSearch /> },
               ],
             },
           ]}
@@ -162,6 +164,7 @@ export default function Private() {
           <Outlet />
         </Content>
       </Layout>
+      <AdminProfileModal visible={isModalVisible} onClose={() => setIsModalVisible(false)} />
     </Layout>
   );
 }

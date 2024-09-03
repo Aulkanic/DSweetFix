@@ -10,5 +10,7 @@ export const RouterUrl = {
     StaffDashboard:'/Dashboard/Staff',
     POS:'/Dashboard/Point of Sale',
     ProductList:'/Dashboard/Product/List',
-    Sales:'/Dashboard/Sales'
+    Sales:'/Dashboard/Staff/Sales',
+    AdminSales:'/Dashboard/Sales',
+    Reports:'/Dashboard/Reports',
 }

@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RouterUrl } from '../../../routes';
 import { saveAdminInfo, saveStaffInfo } from '../../../zustand/store/store.provider';
+import { UserData } from '../../../types';
 
 export const LoginPage = () => {
   const navigate = useNavigate()
@@ -29,7 +30,11 @@ export const LoginPage = () => {
           // Assume usernames are unique, so get the first document
           const userDoc = querySnapshot.docs[0];
 
-          const userData = userDoc.data();
+          const userData = {
+         
+            ...userDoc.data() as UserData,
+            id: userDoc.id, // Include the document ID
+          };
           console.log(userData)
           // Check if the retrieved email is valid
           if (!userData.email || !userData.email.includes('@')) {
