@@ -8,14 +8,16 @@ import { TbLayoutDashboardFilled } from "react-icons/tb";
 import { MdOutlineInventory,MdPointOfSale } from "react-icons/md";
 import { GrMoney } from "react-icons/gr";
 import { Avatar, Button, Layout, Menu, Popover, theme } from 'antd';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { RouterUrl } from '../routes';
-import { logoutAdmin } from '../zustand/store/store.provider';
+import { logoutAdmin, selector } from '../zustand/store/store.provider';
 import StaffProfileModal from './StaffProfile';
+import useStore from '../zustand/store/store';
 
 const { Header, Sider, Content } = Layout;
 
 export default function StaffSide() {
+  const user = useStore(selector('staff'))
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false); 
@@ -51,7 +53,7 @@ export default function StaffSide() {
     />
   );
 
-  return (
+  return !user.isAuthenticated ? (<Navigate replace to={RouterUrl.Login} />) : (
     <Layout className="h-max min-h-screen">
       <Sider
         width={'20%'}
