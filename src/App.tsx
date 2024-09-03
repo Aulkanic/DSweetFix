@@ -2,7 +2,8 @@ import './App.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Private, Public } from './layout'
 import { RouterUrl } from './routes'
-import { AdminHomepage, CategoryListPage, CreateCategoryPage, CreateInventoryPage, CreateStaffPage, InventoryListPage, LoginPage, StaffListPage } from './pages'
+import { AdminHomepage, CategoryListPage, CreateCategoryPage, CreateInventoryPage, CreateStaffPage, InventoryListPage, LoginPage, PointofSalePage, StaffDashboard, StaffInventoryPage, StaffListPage, StaffSalesPage } from './pages'
+import StaffSide from './layout/staff'
 
 function App() {
   const router = createBrowserRouter([
@@ -24,6 +25,16 @@ function App() {
         { path: RouterUrl.CategoryList, element:<CategoryListPage />},
         { path: RouterUrl.InventoryCreation, element:<CreateInventoryPage />},
         { path: RouterUrl.InventoryList, element:<InventoryListPage />},
+      ]
+    },
+    {
+      path: RouterUrl.Login,
+      element:<StaffSide />,
+      children:[
+        { path: RouterUrl.StaffDashboard, element:<StaffDashboard />},
+        { path: RouterUrl.POS, element:<PointofSalePage />},
+        { path: RouterUrl.ProductList, element:<StaffInventoryPage />},
+        { path: RouterUrl.Sales, element:<StaffSalesPage />}
       ]
     }
   ])

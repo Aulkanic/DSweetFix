@@ -7,6 +7,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RouterUrl } from '../../../routes';
+import { saveAdminInfo, saveStaffInfo } from '../../../zustand/store/store.provider';
 
 export const LoginPage = () => {
   const navigate = useNavigate()
@@ -34,16 +35,26 @@ export const LoginPage = () => {
           if (!userData.email || !userData.email.includes('@')) {
             throw new Error('Invalid email format');
           }
-    
+          
           // Use the associated email to sign in with Firebase Authentication
           await signInWithEmailAndPassword(auth, userData.email, password);
           setLoading(false)
-          message.success('Login successful!');
-          navigate(RouterUrl.AdminDashboard)
+          if(userData.type === 'admin'){
+            saveAdminInfo(userData)
+            message.success('Login successful!');
+            navigate(RouterUrl.AdminDashboard)
+          } else{
+            saveStaffInfo(userData)
+            message.success('Login successful!');
+            navigate(RouterUrl.StaffDashboard)
+          }
+
           // Additional logic, like redirecting the user, can go here
         } catch (error) {
           console.error('Login failed:', error);
           message.error('Login failed! Please check your username and password.');
+        } finally{
+          setLoading(false)
         }
     };
     

@@ -63,6 +63,7 @@ export const CreateStaffPage = () => {
         lastname: values.lastname,
         profilePicture: profilePictureUrl,
         status:'Active',
+        type:'staff',
         createdAt: serverTimestamp(),
         providerId: "email", // Specify that the provider is email
       });
@@ -71,10 +72,14 @@ export const CreateStaffPage = () => {
       message.success("Staff created successfully!");
       form.resetFields(); // Reset the form fields
       setPreviewImage(undefined); // Reset image preview
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error adding staff: ", error);
       setLoading(false);
-      message.error("Failed to create staff.");
+      if (error.code === 'auth/email-already-in-use') {
+        message.error("Email is already associated with an account. Please use a different email.");
+      } else {
+        message.error("Failed to create staff.");
+      }
     }
   };
   

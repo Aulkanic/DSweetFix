@@ -3,10 +3,8 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
-import { BsList } from "react-icons/bs";
-import { TiGroupOutline } from "react-icons/ti";
-import { TbLayoutDashboardFilled, TbCategoryFilled, TbReportSearch } from "react-icons/tb";
-import { MdOutlineAdd, MdOutlineInventory } from "react-icons/md";
+import { TbLayoutDashboardFilled } from "react-icons/tb";
+import { MdOutlineInventory,MdPointOfSale } from "react-icons/md";
 import { GrMoney } from "react-icons/gr";
 import { Avatar, Button, Layout, Menu, Popover, theme } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -15,7 +13,7 @@ import { logoutAdmin } from '../zustand/store/store.provider';
 
 const { Header, Sider, Content } = Layout;
 
-export default function Private() {
+export default function StaffSide() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const {
@@ -72,50 +70,30 @@ export default function Private() {
           onClick={({ key }) => handleMenuClick(key)}
           items={[
             {
-              key: RouterUrl.AdminDashboard,
+              key: RouterUrl.StaffDashboard,
               icon: <TbLayoutDashboardFilled />,
               label: 'Dashboard',
             },
             {
               key: '2',
-              label: 'Management',
+              label: 'Features',
               style: { background: '#0284c7' },
               children: [
                 {
-                  key: '9',
-                  label: 'Staff',
-                  icon: <TiGroupOutline />,
-                  children: [
-                    { key: RouterUrl.StaffList, label: 'Staff List', icon: <BsList /> },
-                    { key: RouterUrl.StaffAdd, label: 'Create Staff', icon: <MdOutlineAdd /> },
-                  ],
+                  key: RouterUrl.POS,
+                  label: 'Point of Sale',
+                  icon: <MdPointOfSale />,
                 },
                 {
-                  key: '10',
+                  key: RouterUrl.ProductList,
                   label: 'Inventory',
                   icon: <MdOutlineInventory />,
-                  children: [
-                    { key: RouterUrl.InventoryList, label: 'Inventory List', icon: <BsList /> },
-                    { key: RouterUrl.InventoryCreation, label: 'Add Inventory Item', icon: <MdOutlineAdd /> },
-                  ],
                 },
                 {
-                  key: 'sub3',
-                  label: 'Category',
-                  icon: <TbCategoryFilled />,
-                  children: [
-                    { key: RouterUrl.CategoryList, label: 'Cateogry List', icon: <BsList /> },
-                    { key: RouterUrl.CategoryCreation, label: 'Add Category', icon: <MdOutlineAdd /> },
-                  ],
+                  key: RouterUrl.Sales,
+                  label: 'Sales',
+                  icon: <GrMoney />,
                 },
-              ],
-            },
-            {
-              key: '3',
-              label: 'Analytics',
-              children: [
-                { key: '1', label: 'Sales', icon: <GrMoney /> },
-                { key: '2', label: 'Reports', icon: <TbReportSearch /> },
               ],
             },
           ]}

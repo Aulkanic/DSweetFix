@@ -7,4 +7,8 @@ export const RouterUrl = {
     CategoryCreation:'/Dashboard/Category/Add',
     InventoryCreation:'/Dashboard/Inventory/Add',
     InventoryList:'/Dashboard/Inventory/List',
+    StaffDashboard:'/Dashboard/Staff',
+    POS:'/Dashboard/Point of Sale',
+    ProductList:'/Dashboard/Product/List',
+    Sales:'/Dashboard/Sales'
 }

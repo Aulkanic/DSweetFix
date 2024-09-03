@@ -14,3 +14,19 @@ export  interface Product {
     description: string;
   }
   
+ export interface Order {
+    id: string;
+    cartItems: Array<{
+      productId: string;
+      productName: string;
+      quantity: number;
+      price: number;
+      total: number;
+    }>;
+    subtotal: number;
+    grandTotal: number;
+    paymentAmount: number;
+    change: number;
+    paymentMethod: string;
+    timestamp: Date;
+  }
