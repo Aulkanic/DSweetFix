@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  UserOutlined 
 } from '@ant-design/icons';
 import { BsList } from "react-icons/bs";
 import { TiGroupOutline } from "react-icons/ti";
@@ -149,7 +150,7 @@ export default function Private() {
             trigger="click"
             placement="bottomRight"
           >
-            <Avatar style={{ cursor: 'pointer' }} />
+            <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer',backgroundColor: '#87d068' }} />
           </Popover>
         </Header>
         <Content

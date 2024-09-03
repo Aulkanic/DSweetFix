@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { TbLayoutDashboardFilled } from "react-icons/tb";
 import { MdOutlineInventory,MdPointOfSale } from "react-icons/md";
@@ -10,12 +11,14 @@ import { Avatar, Button, Layout, Menu, Popover, theme } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { RouterUrl } from '../routes';
 import { logoutAdmin } from '../zustand/store/store.provider';
+import StaffProfileModal from './StaffProfile';
 
 const { Header, Sider, Content } = Layout;
 
 export default function StaffSide() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false); 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -33,12 +36,12 @@ export default function StaffSide() {
 
   const popoverContent = (
     <Menu
-    style={{width:'100px'}}
+      style={{ width: '100px' }}
       onClick={({ key }) => {
         if (key === 'logout') {
           handleLogout();
         } else if (key === 'settings') {
-          navigate('/settings');
+          setIsModalVisible(true); // Show the modal when "Settings" is clicked
         }
       }}
       items={[
@@ -125,7 +128,7 @@ export default function StaffSide() {
             trigger="click"
             placement="bottomRight"
           >
-            <Avatar style={{ cursor: 'pointer' }} />
+           <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer',backgroundColor: '#87d068' }} />
           </Popover>
         </Header>
         <Content
@@ -140,6 +143,7 @@ export default function StaffSide() {
           <Outlet />
         </Content>
       </Layout>
+      <StaffProfileModal visible={isModalVisible} onClose={() => setIsModalVisible(false)} />
     </Layout>
   );
 }

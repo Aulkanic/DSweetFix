@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Button, message } from 'antd';
 import useStore from '../zustand/store/store';
-import { selector } from '../zustand/store/store.provider';
+import { saveAdminInfo, selector } from '../zustand/store/store.provider';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../db';
+import { auth, db } from '../db';
+import { updateEmail, updatePassword } from 'firebase/auth';
 
 interface ProfileModalProps {
   visible: boolean;
@@ -35,7 +36,20 @@ const AdminProfileModal: React.FC<ProfileModalProps> = ({ visible, onClose }) =>
           email: values.email,
           password: values.password, // Note: Storing plaintext passwords is not recommended
         });
-  
+        if (auth.currentUser) {
+          if (values.email !== user.info.email) {
+            await updateEmail(auth.currentUser, values.email);
+          }
+          if (values.password !== user.info.password) {
+            await updatePassword(auth.currentUser, values.password);
+          }
+        }
+        saveAdminInfo({
+          id: user.info.id,
+          username: values.username,
+          email: values.email,
+          password: values.password, // You can choose whether to store this in Zustand
+        })
         message.success('Profile updated successfully');
         onClose();
       } catch (error) {
