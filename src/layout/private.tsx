@@ -24,7 +24,7 @@ export default function Private() {
   const [collapsed, setCollapsed] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false); 
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { borderRadiusLG },
   } = theme.useToken();
 
   const handleMenuClick = (key: string) => {
@@ -59,21 +59,21 @@ export default function Private() {
     <Layout className="h-max min-h-screen">
       <Sider
         width={'20%'}
-        style={{ background: '#0284c7' }}
+        style={{ background: '#B0E0E6' }}
         className='custom-menu'
         trigger={null}
         collapsible
         collapsed={collapsed}
       >
         <div className='p-4'>
-          <p className='font-grand-hotel text-4xl text-white'>D’ Sweet Fix</p>
-          <p className='text-white text-lg'>BAKING & CONFECTIONERY SHOP</p>
+          <p className='font-grand-hotel text-4xl text-white line-clamp-1'>D’ Sweet Fix</p>
+          <p className='text-white text-lg line-clamp-1'>BAKING & CONFECTIONERY SHOP</p>
         </div>
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
-          style={{ background: '#0284c7', color: 'white' }}
+          style={{ background: '#B0E0E6', color: 'white' }}
           onClick={({ key }) => handleMenuClick(key)}
           items={[
             {
@@ -84,7 +84,7 @@ export default function Private() {
             {
               key: '2',
               label: 'Management',
-              style: { background: '#0284c7' },
+              style: { background: '#B0E0E6' },
               children: [
                 {
                   key: '9',
@@ -126,20 +126,21 @@ export default function Private() {
           ]}
         />
       </Sider>
-      <Layout>
+      <Layout >
         <Header
           style={{
             padding: 0,
-            background: colorBgContainer,
+            background: '#FFD1DC',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingRight: '12px'
+            paddingRight: '12px',
+            color:'white'
           }}
         >
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={collapsed ? <MenuUnfoldOutlined color='white' /> : <MenuFoldOutlined color='white' />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
               fontSize: '16px',
@@ -160,7 +161,7 @@ export default function Private() {
             margin: '24px 16px',
             padding: 24,
             minHeight: 280,
-            background: colorBgContainer,
+            background: '#FFD1DC',
             borderRadius: borderRadiusLG,
           }}
         >

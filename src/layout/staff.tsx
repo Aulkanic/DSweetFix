@@ -22,7 +22,7 @@ export default function StaffSide() {
   const [collapsed, setCollapsed] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false); 
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { borderRadiusLG },
   } = theme.useToken();
 
   const handleMenuClick = (key: string) => {
@@ -57,7 +57,7 @@ export default function StaffSide() {
     <Layout className="h-max min-h-screen">
       <Sider
         width={'20%'}
-        style={{ background: '#0284c7' }}
+        style={{ background: '#B0E0E6' }}
         className='custom-menu'
         trigger={null}
         collapsible
@@ -71,7 +71,7 @@ export default function StaffSide() {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
-          style={{ background: '#0284c7', color: 'white' }}
+          style={{ background: '#B0E0E6', color: 'white' }}
           onClick={({ key }) => handleMenuClick(key)}
           items={[
             {
@@ -82,7 +82,7 @@ export default function StaffSide() {
             {
               key: '2',
               label: 'Features',
-              style: { background: '#0284c7' },
+              style: { background: '#B0E0E6' },
               children: [
                 {
                   key: RouterUrl.POS,
@@ -108,7 +108,7 @@ export default function StaffSide() {
         <Header
           style={{
             padding: 0,
-            background: colorBgContainer,
+            background: '#FFD1DC',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -138,7 +138,7 @@ export default function StaffSide() {
             margin: '24px 16px',
             padding: 24,
             minHeight: 280,
-            background: colorBgContainer,
+            background: '#FFD1DC',
             borderRadius: borderRadiusLG,
           }}
         >
