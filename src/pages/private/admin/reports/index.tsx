@@ -66,9 +66,10 @@ export const AdminReportsPage = () => {
           id: doc.id,
           ...doc.data(),
         }));
-
+    
         const filteredOrders = filterOrdersByTimeRange(ordersList, filter);
-
+    
+        // Calculate product sales
         const productSales: { [key: string]: number } = {};
         filteredOrders.forEach((order) => {
           order.cartItems.forEach((item: any) => {
@@ -81,7 +82,7 @@ export const AdminReportsPage = () => {
           sales: productSales[productName],
         }));
         setProductData(productData);
-
+    
         // Fetch Categories
         const categoriesRef = collection(db, "categories");
         const categoriesSnapshot = await getDocs(categoriesRef);
@@ -89,21 +90,22 @@ export const AdminReportsPage = () => {
           id: doc.id,
           ...doc.data(),
         })) as Category[];
-
-        // Ensure `name` exists for each category
+    
+        // Map categories and sales
         const categoryCounts: { [key: string]: number } = {};
         filteredOrders.forEach((order) => {
           order.cartItems.forEach((item: any) => {
-            const category = categoriesList.find(
-              (v: Category) => v.name === item.category
-            )?.name;
-            if (category) {
-              categoryCounts[category] =
-                (categoryCounts[category] || 0) + item.quantity * item.price;
+            const matchedCategory = categoriesList.find(
+              (v: Category) => v.id === item.categoryId // Match by category ID instead of name
+            );
+            if (matchedCategory) {
+              categoryCounts[matchedCategory.name] =
+                (categoryCounts[matchedCategory.name] || 0) +
+                item.quantity * item.price;
             }
           });
         });
-
+    
         const categoryData = Object.keys(categoryCounts).map((category) => ({
           name: category,
           sales: categoryCounts[category],
@@ -113,6 +115,7 @@ export const AdminReportsPage = () => {
         console.error("Error fetching data:", error);
       }
     };
+    
 
     fetchData();
   }, [db, filter]);

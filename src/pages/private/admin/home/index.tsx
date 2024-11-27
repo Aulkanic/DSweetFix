@@ -123,7 +123,7 @@ export const AdminHomepage = () => {
   console.log(recentOrders)
   return (
     <div className="min-h-screen p-4">
-      <h2 className="text-3xl mb-4">Staff Dashboard</h2>
+      <h2 className="text-3xl mb-4">Dashboard</h2>
       <Row gutter={16} className="mb-4">
         <Col span={8}>
           <Card>
