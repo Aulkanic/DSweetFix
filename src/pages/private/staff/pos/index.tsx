@@ -23,23 +23,28 @@ export const PointofSalePage = () => {
     paymentMethod,
     change,
   } = usePos();
+
   return (
-    <div className="min-h-screen p-4">
-      <div className="flex justify-between items-center ">
-        <h2 className="text-3xl">Point of Sale</h2>
-        <p>{currentDateTime}</p>
+    <div className="min-h-screen p-4 bg-gray-100">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+        <h2 className="text-2xl md:text-3xl font-semibold mb-2 md:mb-0">Point of Sale</h2>
+        <p className="text-gray-600">{currentDateTime}</p>
       </div>
 
       <Divider className="my-4" />
-      <div className="w-full flex gap-2 flex-nowrap">
-        <div className="flex-1 h-max">
+
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Products Section */}
+        <div className="flex-1">
           <Tabs
             type="card"
             defaultActiveKey="0"
             items={items}
             onChange={handleCategoryChange}
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4">
             {products
               .filter(
                 (p) =>
@@ -52,12 +57,12 @@ export const PointofSalePage = () => {
                   className={`${
                     cart?.find((v: any) => v.product.id === product.id)
                       ? "border-2 border-sky-600 bg-sky-500 text-white"
-                      : "border-2 border-gray-300 bg-gray-300 text-white"
+                      : "border-2 border-gray-300 bg-gray-300 text-gray-900"
                   } transition ease-in-out duration-300 shadow-md rounded-lg p-4 h-[220px] cursor-pointer flex flex-col items-center justify-center`}
                   onClick={() => handleAddToCart(product)}
                 >
                   <img
-                    className="w-[100px] h-[100px] rounded-full mb-2"
+                    className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-full mb-2"
                     src={product.image}
                     alt={product.name}
                   />
@@ -74,18 +79,21 @@ export const PointofSalePage = () => {
               ))}
           </div>
         </div>
-        <div className="w-full md:w-[500px] border-l-2 pl-4 min-h-screen bg-gray-50 shadow-lg">
+
+        {/* Cart Section */}
+        <div className="w-full lg:w-[400px] border-l-2 lg:border-l pl-4 min-h-screen bg-white shadow-lg rounded-lg p-4">
           <h3 className="text-2xl font-semibold mb-6 border-b pb-2 text-gray-700">
             Cart
           </h3>
+
           {cart.length > 0 ? (
             cart.map((item) => (
               <div
                 className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200"
                 key={item.product.id}
               >
-                <div className="cart-item flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4 basis-[50%]">
+                <div className="cart-item flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
                     <img
                       src={item.img}
                       className="w-[60px] h-[60px] object-cover rounded-lg border"
@@ -108,7 +116,7 @@ export const PointofSalePage = () => {
                     <InputNumber
                       min={1}
                       value={item.quantity}
-                      className="w-20 border border-gray-300 text-center rounded"
+                      className="w-16 border border-gray-300 text-center rounded"
                       onChange={(value) =>
                         handleQuantityChange(item.product.id, value)
                       }
@@ -122,7 +130,7 @@ export const PointofSalePage = () => {
                     >
                       +
                     </Button>
-                    <span className="font-semibold text-lg text-gray-700 flex-grow text-right">
+                    <span className="font-semibold text-lg text-gray-700">
                       {currencyFormat(
                         Number(item.product.price) * item.quantity
                       )}
@@ -136,10 +144,11 @@ export const PointofSalePage = () => {
               Your cart is empty. Add items to proceed.
             </p>
           )}
+
           {cart.length > 0 && (
             <>
               <Divider className="my-6" />
-              <div className="cart-summary p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="cart-summary p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex justify-between mb-4">
                   <span className="font-semibold text-gray-600">Subtotal:</span>
                   <span className="text-gray-700">
@@ -211,3 +220,4 @@ export const PointofSalePage = () => {
     </div>
   );
 };
+
