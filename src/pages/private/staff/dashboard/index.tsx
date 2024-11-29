@@ -37,9 +37,7 @@ export const StaffDashboard = () => {
             id: doc.id,
             ...doc.data(),
           })) as Order[];
-        setRecentOrders(recentOrdersList.slice(0, 5)); // Show latest 5 orders
-
-        // Aggregate product sales data from orders
+        setRecentOrders(recentOrdersList.slice(0, 5)); 
         const productSales: { [key: string]: number } = {};
         ordersList.slice(1).forEach(order => {
           order.cartItems.forEach((item: any) => {
