@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-case-declarations */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import {
@@ -11,10 +13,21 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
-import { Table, Button, Select, Modal, Form, Input, message, Popconfirm } from "antd";
+import {
+  Table,
+  Button,
+  Select,
+  Modal,
+  Form,
+  Input,
+  message,
+  Popconfirm,
+  DatePicker,
+} from "antd";
 import { format } from "date-fns";
 import { currencyFormat } from "../../../../utils/utils";
 import { saveAs } from "file-saver";
+import dayjs, { Dayjs } from "dayjs";
 
 const { Option } = Select;
 
@@ -33,17 +46,35 @@ interface Order {
 export const AdminSalesPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [filterRange, setFilterRange] = useState<string>("all");
+  const [filterType, setFilterType] = useState<string>("all");
+  const [selectedWeek, setSelectedWeek] = useState<Dayjs>(dayjs());
+  const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs());
+  const [selectedYear, setSelectedYear] = useState<Dayjs>(dayjs());
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [form] = Form.useForm();
   const db = getFirestore();
 
+  const getDefaultDate = (filterType: string): Dayjs => {
+    switch (filterType) {
+      case "weekly":
+        return selectedWeek;
+      case "monthly":
+        return selectedMonth;
+      case "yearly":
+        return selectedYear;
+      default:
+        return dayjs();
+    }
+  };
   // Fetch all orders from Firestore
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const ordersCollectionRef = collection(db, "orders");
-        const ordersQuery = query(ordersCollectionRef, orderBy("timestamp", "desc"));
+        const ordersQuery = query(
+          ordersCollectionRef,
+          orderBy("timestamp", "desc")
+        );
         const ordersSnapshot = await getDocs(ordersQuery);
         const ordersList: Order[] = ordersSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -60,37 +91,32 @@ export const AdminSalesPage = () => {
     fetchOrders();
   }, [db]);
 
-  // Filter orders based on range
-  const filterOrders = (range: string) => {
-    const now = new Date();
-    let filtered: Order[] = [];
+  const filterOrdersByTimeRange = (
+    ordersList: any[],
+    filterType: string,
+    date: Dayjs
+  ) => {
+    return ordersList.filter((order) => {
+      const orderTimestamp = order.timestamp;
+      if (!orderTimestamp || !orderTimestamp.seconds) {
+        return false;
+      }
 
-    switch (range) {
-      case "weekly":
-        filtered = orders.filter(
-          (order) =>
-            (order.timestamp instanceof Date
-              ? order.timestamp
-              : (order.timestamp as Timestamp).toDate()) >
-            new Date(now.setDate(now.getDate() - 7))
-        );
-        break;
-      case "monthly":
-        filtered = orders.filter(
-          (order) =>
-            (order.timestamp instanceof Date
-              ? order.timestamp
-              : (order.timestamp as Timestamp).toDate()) >
-            new Date(now.setMonth(now.getMonth() - 1))
-        );
-        break;
-      case "all":
-      default:
-        filtered = orders;
-    }
+      const orderDate = dayjs(orderTimestamp.seconds * 1000);
 
-    setFilteredOrders(filtered);
-    setFilterRange(range);
+      switch (filterType) {
+        case "daily":
+          return orderDate.isSame(date, "day");
+        case "weekly":
+          return orderDate.isSame(date, "week");
+        case "monthly":
+          return orderDate.isSame(date, "month");
+        case "yearly":
+          return orderDate.isSame(date, "year");
+        default:
+          return true;
+      }
+    });
   };
 
   // Add new sale
@@ -99,7 +125,7 @@ export const AdminSalesPage = () => {
       const newOrder = {
         ...values,
         timestamp: Timestamp.fromDate(new Date()),
-        cartItems: Array(values.totalItems).fill({}), 
+        cartItems: Array(values.totalItems).fill({}),
       };
       const docRef = await addDoc(collection(db, "orders"), newOrder);
       const addedOrder = { id: docRef.id, ...newOrder };
@@ -158,7 +184,7 @@ export const AdminSalesPage = () => {
 
     const csvContent = [csvHeaders.join("\n"), csvRows.join("\n")].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, `sales-${filterRange}.csv`);
+    saveAs(blob, `sales.csv`);
     message.success("Sales data exported successfully!");
   };
 
@@ -234,15 +260,72 @@ export const AdminSalesPage = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl">Sales Orders</h2>
         <div className="flex gap-4">
-          <Select
-            defaultValue="all"
-            onChange={filterOrders}
-            className="w-40"
-          >
-            <Option value="all">All</Option>
-            <Option value="weekly">Weekly</Option>
-            <Option value="monthly">Monthly</Option>
-          </Select>
+          <div className="flex gap-4">
+            {/* Filter Type Selector */}
+            <Select
+              defaultValue="all"
+              onChange={(value) => {
+                setFilterType(value);
+                if (value === "all") {
+                  setFilteredOrders(orders); // Reset filter
+                } else {
+                  setFilteredOrders(
+                    filterOrdersByTimeRange(
+                      orders,
+                      value,
+                      getDefaultDate(value)
+                    )
+                  );
+                }
+              }}
+              className="w-40"
+            >
+              <Select.Option value="all">All</Select.Option>
+              <Select.Option value="weekly">Weekly</Select.Option>
+              <Select.Option value="monthly">Monthly</Select.Option>
+              <Select.Option value="yearly">Yearly</Select.Option>
+            </Select>
+
+            {/* Weekly Filter */}
+            {filterType === "weekly" && (
+              <DatePicker
+                picker="week"
+                onChange={(date) => {
+                  setSelectedWeek(date || dayjs());
+                  setFilteredOrders(
+                    filterOrdersByTimeRange(orders, "weekly", date || dayjs())
+                  );
+                }}
+              />
+            )}
+
+            {/* Monthly Filter */}
+            {filterType === "monthly" && (
+              <DatePicker
+                picker="month"
+                onChange={(date) => {
+                  setSelectedMonth(date || dayjs());
+                  setFilteredOrders(
+                    filterOrdersByTimeRange(orders, "monthly", date || dayjs())
+                  );
+                }}
+              />
+            )}
+
+            {/* Yearly Filter */}
+            {filterType === "yearly" && (
+              <DatePicker
+                picker="year"
+                onChange={(date) => {
+                  setSelectedYear(date || dayjs());
+                  setFilteredOrders(
+                    filterOrdersByTimeRange(orders, "yearly", date || dayjs())
+                  );
+                }}
+              />
+            )}
+          </div>
+
           <Button type="primary" onClick={() => setAddModalVisible(true)}>
             Add Sale
           </Button>
@@ -269,7 +352,9 @@ export const AdminSalesPage = () => {
           <Form.Item
             name="totalItems"
             label="Total Items"
-            rules={[{ required: true, message: "Please enter the total items." }]}
+            rules={[
+              { required: true, message: "Please enter the total items." },
+            ]}
           >
             <Input type="number" placeholder="Enter total items" />
           </Form.Item>
@@ -283,14 +368,18 @@ export const AdminSalesPage = () => {
           <Form.Item
             name="grandTotal"
             label="Grand Total"
-            rules={[{ required: true, message: "Please enter the grand total." }]}
+            rules={[
+              { required: true, message: "Please enter the grand total." },
+            ]}
           >
             <Input type="number" placeholder="Enter grand total" />
           </Form.Item>
           <Form.Item
             name="paymentAmount"
             label="Payment Amount"
-            rules={[{ required: true, message: "Please enter the payment amount." }]}
+            rules={[
+              { required: true, message: "Please enter the payment amount." },
+            ]}
           >
             <Input type="number" placeholder="Enter payment amount" />
           </Form.Item>
@@ -304,7 +393,9 @@ export const AdminSalesPage = () => {
           <Form.Item
             name="paymentMethod"
             label="Payment Method"
-            rules={[{ required: true, message: "Please select a payment method." }]}
+            rules={[
+              { required: true, message: "Please select a payment method." },
+            ]}
           >
             <Select placeholder="Select payment method">
               <Option value="Cash">Cash</Option>
