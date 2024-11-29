@@ -27,7 +27,7 @@ export const StaffDashboard = () => {
           })) as Order[];
         setOrderCount(ordersList.slice(1).length);
 
-        const totalIncomeValue = ordersList.reduce((sum, order: any) => sum + (order.grandTotal || 0), 0);
+        const totalIncomeValue = ordersList.reduce((sum, order: any) => Number(sum) + (Number(order.grandTotal) || 0), 0);
         setTotalIncome(totalIncomeValue);
 
         // Fetch recent orders
