@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Divider, InputNumber, Select, Tabs } from "antd";
+import { Button, Divider, Input, InputNumber, Select, Tabs } from "antd";
 import { currencyFormat } from "../../../../utils/utils";
 import usePos from "./usePos";
 
@@ -11,6 +11,10 @@ export const PointofSalePage = () => {
     handlePaymentAmountChange,
     handleQuantityChange,
     setPaymentMethod,
+    setGcashCustomerInfo,
+    setGcashReference,
+    gcashCustomerInfo,
+    gcashReference,
     items,
     currentDateTime,
     loading,
@@ -24,6 +28,28 @@ export const PointofSalePage = () => {
     change,
   } = usePos();
 
+  const renderGCashFields = () => (
+    <>
+      <div className="gcash-reference mb-4 flex gap-4 items-center">
+        <h4 className="text-md font-semibold text-gray-600">Reference Number:</h4>
+        <Input
+          className="flex-1 border rounded-lg p-2"
+          value={gcashReference}
+          onChange={(e) => setGcashReference(e.target.value)}
+          placeholder="Enter GCash reference number"
+        />
+      </div>
+      <div className="gcash-customer mb-4 flex gap-4 items-center">
+        <h4 className="text-md font-semibold text-gray-600">Customer Name/Number:</h4>
+        <Input
+          className="flex-1 border rounded-lg p-2"
+          value={gcashCustomerInfo}
+          onChange={(e) => setGcashCustomerInfo(e.target.value)}
+          placeholder="Enter customer name or number"
+        />
+      </div>
+    </>
+  );
   return (
     <div className="min-h-screen p-4 bg-gray-100">
       {/* Header Section */}
@@ -175,11 +201,9 @@ export const PointofSalePage = () => {
                   >
                     <Select.Option value="Cash">Cash</Select.Option>
                     <Select.Option value="GCash">GCash</Select.Option>
-                    <Select.Option value="Credit Card">
-                      Credit Card
-                    </Select.Option>
                   </Select>
                 </div>
+                {paymentMethod === "GCash" && renderGCashFields()}
                 <div className="payment-amount mb-4 flex gap-4 items-center">
                   <h4 className="text-md font-semibold text-gray-600">
                     Customer Payment:

@@ -21,6 +21,8 @@ export default function usePos() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<string>("Cash");
+  const [gcashReference, setGcashReference] = useState("");
+  const [gcashCustomerInfo, setGcashCustomerInfo] = useState("");
   const [loading, setLoading] = useState(false);
   const [cart, setCart] = useState<
     { product: Product; quantity: number; img: string }[]
@@ -38,7 +40,6 @@ export default function usePos() {
         const productsRef = collection(db, "products");
         const categoriesRef = collection(db, "categories");
 
-        // Real-time updates for products
         const unsubscribeProducts = onSnapshot(productsRef, (snapshot) => {
           const productsList: Product[] = snapshot.docs.map((doc) => ({
             id: doc.id,
@@ -48,7 +49,6 @@ export default function usePos() {
           setProducts(productsList);
         });
 
-        // Fetch categories (no real-time needed unless required)
         const categoriesSnapshot = await getDocs(categoriesRef);
         const categoriesList: Category[] = categoriesSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -91,7 +91,6 @@ export default function usePos() {
   // Handle category selection
   const handleCategoryChange = (value: string) => setSelectedCategory(value);
 
-  // Add product to cart
   const handleAddToCart = (product: Product) => {
     const existingProductIndex = cart.findIndex(
       (item) => item.product.id === product.id
@@ -108,7 +107,6 @@ export default function usePos() {
     }
   };
 
-  // Handle quantity change in cart
   const handleQuantityChange = (productId: string, quantity: number | null) => {
     if (quantity === null || quantity < 1) {
       handleRemoveFromCart(productId);
@@ -196,6 +194,8 @@ export default function usePos() {
         })),
         subtotal,
         grandTotal,
+        gcashCustomerInfo,
+        gcashReference,
         paymentAmount,
         change,
         paymentMethod,
@@ -249,6 +249,10 @@ export default function usePos() {
     handleQuantityChange,
     handleRemoveFromCart,
     setPaymentMethod,
+    setGcashCustomerInfo,
+    setGcashReference,
+    gcashCustomerInfo,
+    gcashReference,
     items,
     currentDateTime,
     loading,

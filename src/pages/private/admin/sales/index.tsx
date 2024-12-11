@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-case-declarations */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import {
@@ -23,6 +21,9 @@ import {
   message,
   Popconfirm,
   DatePicker,
+  Row,
+  Col,
+  Card,
 } from "antd";
 import { format } from "date-fns";
 import { currencyFormat } from "../../../../utils/utils";
@@ -66,7 +67,6 @@ export const AdminSalesPage = () => {
         return dayjs();
     }
   };
-  // Fetch all orders from Firestore
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -188,6 +188,22 @@ export const AdminSalesPage = () => {
     message.success("Sales data exported successfully!");
   };
 
+  const calculateTotals = () => {
+    const totalSales = filteredOrders.reduce((sum, order) => sum + Number(order.grandTotal), 0);
+    const totalOrders = filteredOrders.length;
+    const totalPayment = filteredOrders.reduce((sum, order) => Number(sum) + Number(order.paymentAmount), 0);
+    const totalChange = filteredOrders.reduce((sum, order) => sum + Number(order.change), 0);
+
+    return {
+      totalSales,
+      totalOrders,
+      totalPayment,
+      totalChange,
+    };
+  };
+
+  const { totalSales, totalOrders, totalPayment, totalChange } = calculateTotals();
+
   const columns = [
     {
       title: "Order ID",
@@ -196,7 +212,8 @@ export const AdminSalesPage = () => {
     },
     {
       title: "Total Items",
-      dataIndex: "totalItems",
+      dataIndex: "cartItems",
+      render:(v:any) => `${v?.length}`,
       key: "totalItems",
     },
     {
@@ -229,6 +246,11 @@ export const AdminSalesPage = () => {
       key: "paymentMethod",
     },
     {
+      title: "Reference Number",
+      dataIndex: "gcashReference",
+      key: "paymentMethod",
+    },
+    {
       title: "Date & Time",
       dataIndex: "timestamp",
       key: "timestamp",
@@ -254,9 +276,31 @@ export const AdminSalesPage = () => {
       ),
     },
   ];
-
+  console.log(filteredOrders)
   return (
     <div className="min-h-screen p-4">
+         <Row gutter={[16, 16]} className="mb-4">
+        <Col xs={24} sm={12} md={6}>
+          <Card title="Total Sales" bordered={false} className="bg-gray-100">
+            {currencyFormat(totalSales)}
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card title="Total Orders" bordered={false} className="bg-gray-100">
+            {totalOrders}
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card title="Total Payment" bordered={false} className="bg-gray-100">
+            {currencyFormat(totalPayment)}
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card title="Total Change" bordered={false} className="bg-gray-100">
+            {currencyFormat(totalChange)}
+          </Card>
+        </Col>
+      </Row>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl">Sales Orders</h2>
         <div className="flex gap-4">

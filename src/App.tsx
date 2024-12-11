@@ -2,7 +2,7 @@ import './App.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Private, Public } from './layout'
 import { RouterUrl } from './routes'
-import { AdminHomepage, AdminReportsPage, AdminSalesPage, CategoryListPage, CreateCategoryPage, CreateInventoryPage, CreateStaffPage, InventoryListPage, LoginPage, PointofSalePage, StaffDashboard, StaffInventoryPage, StaffListPage, StaffSalesPage } from './pages'
+import { AdminHomepage, AdminReportsPage, AdminSalesPage, CategoryListPage, CreateCategoryPage, CreateInventoryPage, CreateStaffPage, IncomPage, InventoryListPage, LoginPage, PointofSalePage, StaffDashboard, StaffInventoryPage, StaffListPage, StaffSalesPage } from './pages'
 import StaffSide from './layout/staff'
 
 function App() {
@@ -27,6 +27,7 @@ function App() {
         { path: RouterUrl.InventoryList, element:<InventoryListPage />},
         { path: RouterUrl.AdminSales, element:<AdminSalesPage />},
         { path: RouterUrl.Reports, element:<AdminReportsPage />},
+        { path: RouterUrl.Income, element:<IncomPage />},
       ]
     },
     {
