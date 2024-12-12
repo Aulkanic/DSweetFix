@@ -263,7 +263,7 @@ export default function Private() {
                   children: [
                     {
                       key: RouterUrl.CategoryList,
-                      label: "Cateogry List",
+                      label: "Category List",
                       icon: <BsList />,
                     },
                     {
