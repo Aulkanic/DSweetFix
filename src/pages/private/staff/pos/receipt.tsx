@@ -14,7 +14,7 @@ interface ReceiptProps {
 }
 
 const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>(
-  ({ cart, subtotal, grandTotal, paymentAmount, change, handleReset }, ref) => {
+  ({ cart, subtotal, grandTotal, paymentAmount, change, handleReset }) => {
     const contentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
       contentRef,

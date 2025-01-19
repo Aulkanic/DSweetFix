@@ -66,7 +66,7 @@ export default function Private() {
   const {
     token: { borderRadiusLG },
   } = theme.useToken();
-
+  console.log(products)
   useEffect(() => {
     const fetchInventoryData = async () => {
       try {

@@ -16,7 +16,7 @@ export const StaffSalesPage = () => {
   const [selectedYear, setSelectedYear] = useState<Dayjs>(dayjs());
   const [searchTerm, setSearchTerm] = useState<string>("");
   const db = getFirestore();
-
+  console.log(searchTerm)
   const getDefaultDate = (filterType: string): Dayjs => {
     switch (filterType) {
       case "weekly":

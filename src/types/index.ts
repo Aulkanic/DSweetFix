@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Category {
     id: string;
     name: string;
   }
   
 export  interface Product {
-    returnDays: ReactNode;
-    returnPolicy: ReactNode;
+    returnDays: any;
+    returnPolicy: any;
     id: string;
     name: string;
     category: string;
