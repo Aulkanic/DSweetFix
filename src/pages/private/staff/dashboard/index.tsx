@@ -122,6 +122,7 @@ export const StaffDashboard = () => {
       title: "Order ID",
       dataIndex: "id",
       key: "id",
+      render: (id: string) => id.substring(0, 6),
     },
     {
       title: "Subtotal",

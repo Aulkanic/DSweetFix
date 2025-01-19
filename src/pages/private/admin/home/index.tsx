@@ -17,11 +17,15 @@ export const AdminHomepage = () => {
   const [categoryData, setCategoryData] = useState<any[]>([]);
   const [filterType, setFilterType] = useState<string>('daily');
   const [selectedRange, setSelectedRange] = useState<any>(null);
+  const [totalProfit, setTotalProfit] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+
 
   const db = getFirestore();
 
   const fetchFilteredData = async () => {
     try {
+      setLoading(true);
       const ordersCollectionRef = collection(db, "orders");
       let ordersQuery = query(ordersCollectionRef);
 
@@ -35,10 +39,23 @@ export const AdminHomepage = () => {
       }
 
       const ordersSnapshot = await getDocs(ordersQuery);
-      const ordersList = ordersSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Order[];
+      const ordersList = ordersSnapshot.docs.map((doc) => {
+        const data = doc.data();
+        let timestamp;
+      
+        // Convert Firestore Timestamp to JavaScript Date
+        if (data.timestamp && typeof data.timestamp.toDate === "function") {
+          timestamp = data.timestamp; // Convert Firestore Timestamp to Date
+        } else {
+          timestamp = null; // Handle unexpected formats
+        }
+      
+        return {
+          id: doc.id,
+          ...data,
+          timestamp, // Ensure timestamp is a Date object
+        };
+      }) as Order[];
 
       const totalIncomeValue = ordersList.reduce(
         (sum, order: any) => Number(sum) + (Number(order.grandTotal) || 0),
@@ -55,19 +72,32 @@ export const AdminHomepage = () => {
       })
       .slice(0, 5);
     setRecentOrders(recentOrdersList);
-    
-
       const productSales: { [key: string]: number } = {};
+      const productsCollectionRef = collection(db, "products");
+      const productsSnapshot = await getDocs(productsCollectionRef);
+      const productsList:any[] = productsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      productsList?.shift()
+      
+      let totalCost = 0;
+      let totalRevenue = 0;
       ordersList.forEach((order) => {
-        order.cartItems.forEach((item: any) => {
-          if (item.productName) {
-            productSales[item.productName] =
-              (productSales[item.productName] || 0) +
-              item.quantity * item.price;
+        order?.cartItems?.forEach((item: any) => {
+          const product = productsList?.find((p: any) => p.id === item.productId); // Match product
+      
+          if(product){
+            const unitCost = product?.priceUnit || 0; 
+            totalCost += unitCost * Number(item.quantity); // Total cost
+            totalRevenue += Number(item.price) * Number(item.quantity); // Total revenue
           }
+
         });
       });
-
+      
+      const profit = totalRevenue - totalCost;
+      setTotalProfit(profit);
       const productData = Object.keys(productSales).map((productName) => ({
         name: productName,
         sales: productSales[productName],
@@ -80,10 +110,9 @@ export const AdminHomepage = () => {
         id: doc.id,
         ...doc.data(),
       })) as Category[];
-
       const categoryCounts: { [key: string]: number } = {};
       ordersList.forEach((order) => {
-        order.cartItems.forEach((item: any) => {
+        order?.cartItems?.forEach((item: any) => {
           const category = categoriesList.find(
             (v: Category) => v.name === item.category
           )?.name;
@@ -93,20 +122,21 @@ export const AdminHomepage = () => {
           }
         });
       });
-
       const categoryData = Object.keys(categoryCounts).map((category) => ({
         name: category,
         sales: categoryCounts[category],
       }));
       setCategoryData(categoryData);
+      setLoading(false); // End loading after data is fetched
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false); // End loading on error
     }
   };
 
   useEffect(() => {
     fetchFilteredData();
-  }, [selectedRange]);
+  }, [selectedRange,filterType]);
 
   const handleFilterChange = (value: string) => {
     setFilterType(value);
@@ -122,6 +152,7 @@ export const AdminHomepage = () => {
       title: "Order ID",
       dataIndex: "id",
       key: "id",
+      render: (id: string) => id.substring(0, 6),
     },
     {
       title: "Subtotal",
@@ -146,7 +177,6 @@ export const AdminHomepage = () => {
         format(timestamp?.toDate(), "MMMM dd, yyyy HH:mm:ss"),
     },
   ];
-
   return (
     <div className="min-h-screen p-4">
       <h2 className="text-3xl mb-4">Dashboard</h2>
@@ -177,12 +207,17 @@ export const AdminHomepage = () => {
       <Row gutter={16} className="mb-4">
         <Col span={8}>
           <Card>
-            <Statistic title="Total Income" value={totalIncome} prefix="₱" />
+            <Statistic title="Total Income" value={loading ? 'Calculating' : totalIncome} prefix="₱" />
           </Card>
         </Col>
         <Col span={8}>
           <Card>
-            <Statistic title="Number of Orders" value={orderCount} />
+            <Statistic title="Number of Orders" value={loading ? 'Calculating' : orderCount} />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <Statistic title="Total Profit" value={loading ? 'Calculating' : totalProfit} prefix="₱" />
           </Card>
         </Col>
       </Row>

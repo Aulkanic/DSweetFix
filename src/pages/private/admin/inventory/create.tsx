@@ -54,7 +54,6 @@ export const CreateInventoryPage = () => {
       await uploadBytes(storageRef, imageFile);
       const imageUrl = await getDownloadURL(storageRef);
 
-      // Add the product data to Firestore
       const productsRef = collection(db, 'products');
       await addDoc(productsRef, {
         ...values,
@@ -133,7 +132,15 @@ export const CreateInventoryPage = () => {
         </div>
         <div className='flex flex-nowrap w-full gap-4'>
         <Form.Item
-          label="Price"
+          label="Unit Price"
+          name="priceUnit"
+          className='flex-1'
+          rules={[{ required: true, message: 'Please enter the product price' }]}
+        >
+          <Input type="number" prefix="₱" />
+        </Form.Item>
+        <Form.Item
+          label="Selling Price"
           name="price"
           className='flex-1'
           rules={[{ required: true, message: 'Please enter the product price' }]}
@@ -156,7 +163,18 @@ export const CreateInventoryPage = () => {
         >
           <TextArea rows={4} />
         </Form.Item>
-
+        <div className="flex flex-nowrap w-full gap-4">
+          <Form.Item
+            label="Return Policy (Days)"
+            name="returnDays"
+            className="flex-1"
+            rules={[
+              { required: true, message: 'Please specify the return policy days' },
+            ]}
+          >
+              <TextArea rows={4} />
+          </Form.Item>
+        </div>
         <Form.Item
           label="Status"
           name="status"

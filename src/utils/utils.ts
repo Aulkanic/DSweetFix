@@ -16,6 +16,20 @@ const timeFormatter = (datetimeString:any) => {
 
 const useDebounce = (func: any) => debounce(func, 1000);
 
+export const formatFirebaseTimestamp = (
+  timestamp: { seconds: number; nanoseconds: number },
+  locale: string = 'en-US'
+): string => {
+  if (!timestamp || !timestamp.seconds) {
+    throw new Error('Invalid timestamp object');
+  }
+
+  // Convert seconds to milliseconds and create a Date object
+  const date = new Date(timestamp.seconds * 1000);
+
+  // Return the formatted date string
+  return date.toLocaleString(locale);
+};
 const currencyFormat = (num: number) => {
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',

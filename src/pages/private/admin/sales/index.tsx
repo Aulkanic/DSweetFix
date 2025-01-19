@@ -209,6 +209,7 @@ export const AdminSalesPage = () => {
       title: "Order ID",
       dataIndex: "id",
       key: "id",
+      render: (id: string) => id.substring(0, 6),
     },
     {
       title: "Total Items",
@@ -276,7 +277,42 @@ export const AdminSalesPage = () => {
       ),
     },
   ];
-  console.log(filteredOrders)
+    const expandableContent = (record: Order) => (
+      <Table
+        dataSource={record.cartItems}
+        columns={[
+          {
+            title: 'Product Name',
+            dataIndex: 'productName',
+            key: 'productName',
+          },
+          {
+            title: 'Category',
+            dataIndex: 'category',
+            key: 'category',
+          },
+          {
+            title: 'Quantity',
+            dataIndex: 'quantity',
+            key: 'quantity',
+          },
+          {
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+            render: (price: number) => `${currencyFormat(price)}`,
+          },
+          {
+            title: 'Total',
+            dataIndex: 'total',
+            key: 'total',
+            render: (total: number) => `${currencyFormat(total)}`,
+          },
+        ]}
+        pagination={false}
+        rowKey="productId"
+      />
+    );
   return (
     <div className="min-h-screen p-4">
          <Row gutter={[16, 16]} className="mb-4">
@@ -382,12 +418,15 @@ export const AdminSalesPage = () => {
         columns={columns}
         dataSource={filteredOrders}
         rowKey="id"
+        expandable={{
+          expandedRowRender: expandableContent,
+        }}
         pagination={{ pageSize: 10 }}
       />
 
       {/* Add Sale Modal */}
       <Modal
-        visible={addModalVisible}
+        open={addModalVisible}
         onCancel={() => setAddModalVisible(false)}
         title="Add New Sale"
         footer={null}

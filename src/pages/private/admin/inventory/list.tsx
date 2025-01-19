@@ -7,6 +7,7 @@ import { currencyFormat } from '../../../../utils/utils';
 import Swal from 'sweetalert2';
 
 const { Option } = Select;
+const { TextArea } = Input
 
 const getStockStatusTag = (stock: number) => {
   if (stock < 10) {
@@ -62,12 +63,12 @@ export const InventoryListPage = () => {
     fetchInventoryData();
   }, [db]);
 
-  // Filter and sort the products based on search and sort option
   const filteredAndSortedProducts = products
     .filter((product) => product.name?.toLowerCase().includes(searchKeyword.toLowerCase()))
 
   // Edit Product Handler
   const handleEdit = (product: Product) => {
+    console.log(product)
     setEditingProduct(product);
     setIsModalVisible(true);
   };
@@ -108,8 +109,9 @@ export const InventoryListPage = () => {
           )
         );
         message.success('Product updated successfully');
-        setIsModalVisible(false);
         setEditingProduct(null);
+        setIsModalVisible(false);
+       
       } catch (error) {
         console.error('Error updating product:', error);
         message.error('Failed to update product');
@@ -150,7 +152,13 @@ export const InventoryListPage = () => {
       render: (v: any) => <p className="line-clamp-2 w-[300px]">{v}</p>,
     },
     {
-      title: 'Price',
+      title: 'Unit Price',
+      dataIndex: 'priceUnit',
+      key: 'price',
+      render: (price: number) => `${currencyFormat(price)}`,
+    },
+    {
+      title: 'Selling Price',
       dataIndex: 'price',
       key: 'price',
       render: (price: number) => `${currencyFormat(price)}`,
@@ -165,7 +173,15 @@ export const InventoryListPage = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-
+    render:(value:any) => {
+      console.log(value)
+      return <Tag color='success'>{value}</Tag>
+    }
+    },
+    {
+      title: 'Return Policy (Hours/Days)',
+      dataIndex: 'returnDays',
+      key: 'Return Policy (Days)',
     },
     {
       title: 'Actions',
@@ -182,7 +198,7 @@ export const InventoryListPage = () => {
       ),
     },
   ];
-
+  console.log(editingProduct)
   return (
     <div style={{ padding: '20px' }}>
       <h2 className='text-4xl mb-4 font-sans font-bold text-gray-700'>Inventory List</h2>
@@ -205,9 +221,10 @@ export const InventoryListPage = () => {
         pagination={{ pageSize: 10 }}
       />
 
-      <Modal
+      {editingProduct && <Modal
         title="Edit Product"
-        visible={isModalVisible}
+        open={isModalVisible}
+        onClose={handleModalCancel}
         onCancel={handleModalCancel}
         footer={null}
       >
@@ -219,7 +236,14 @@ export const InventoryListPage = () => {
           <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="price" label="Price" rules={[{ required: true }]}>
+          <Form.Item name="priceUnit" label="Unit Price" rules={[{ required: true }]}>
+            <InputNumber
+              style={{ width: '100%' }}
+              min={0}
+              formatter={(value) => `${currencyFormat(value as number)}`}
+            />
+          </Form.Item>
+          <Form.Item name="price" label="Selling Price" rules={[{ required: true }]}>
             <InputNumber
               style={{ width: '100%' }}
               min={0}
@@ -245,12 +269,22 @@ export const InventoryListPage = () => {
             <Input.TextArea rows={4} />
           </Form.Item>
           <Form.Item>
+          <Form.Item
+            label="Return Policy (Days)"
+            name="returnDays"
+            className="flex-1"
+            rules={[
+              { required: true, message: 'Please specify the return policy days' },
+            ]}
+          >
+              <TextArea rows={4} />
+          </Form.Item>
             <Button type="primary" htmlType="submit">
               Save
             </Button>
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal>}
     </div>
   );
 };

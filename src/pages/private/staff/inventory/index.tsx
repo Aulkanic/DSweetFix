@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Image, Table, message, Button, Modal, Form, Input, InputNumber, Tag, Select, Row, Col, Tabs } from 'antd';
 import { getFirestore, collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { Category, Product } from '../../../../types';
-import { currencyFormat } from '../../../../utils/utils';
+import { currencyFormat, formatFirebaseTimestamp } from '../../../../utils/utils';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -149,7 +149,24 @@ export const StaffInventoryPage = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      render:(value:any) => {
+        console.log(value)
+        return <Tag color='success'>{value}</Tag>
+      }
     },
+    {
+      title: 'Return Policy (Hours/Days)',
+      dataIndex: 'returnDays',
+      key: 'Return Policy (Days)',
+    },
+    {
+      title:'Arrival Date',
+      dataIndex:'createdAt',
+      render:(value:any) =>{
+        console.log(value)
+        return  <p>{formatFirebaseTimestamp(value)}</p>
+      }
+    }
   ];
 
   return (

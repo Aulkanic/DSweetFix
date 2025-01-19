@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { Card, Col, DatePicker, Row, Select, Table } from 'antd';
+import { Card, Col, DatePicker, Input, Row, Select, Table } from 'antd';
 import { Order } from '../../../../types';
 import { format } from 'date-fns';
 import { currencyFormat } from '../../../../utils/utils';
@@ -14,6 +14,7 @@ export const StaffSalesPage = () => {
   const [selectedWeek, setSelectedWeek] = useState<Dayjs>(dayjs());
   const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs());
   const [selectedYear, setSelectedYear] = useState<Dayjs>(dayjs());
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const db = getFirestore();
 
   const getDefaultDate = (filterType: string): Dayjs => {
@@ -79,6 +80,18 @@ export const StaffSalesPage = () => {
     });
   };
 
+  const handleSearch = (value: string) => {
+    console.log(value)
+    setSearchTerm(value.toLowerCase());
+    const searchResults = orders.filter((order) =>
+      order.id.toLowerCase().includes(value.toLowerCase()) ||
+      order.cartItems?.some((item: any) =>
+        item.productName?.toLowerCase().includes(value.toLowerCase())
+      )
+    );
+    setFilteredOrders(searchResults);
+  };
+
   const calculateTotals = () => {
     const totalSales = filteredOrders.reduce((sum, order) => sum + Number(order.grandTotal), 0);
     const totalOrders = filteredOrders.length;
@@ -100,12 +113,13 @@ export const StaffSalesPage = () => {
       title: 'Order ID',
       dataIndex: 'id',
       key: 'id',
+      render: (id: string) => id.substring(0, 6),
     },
     {
       title: 'Total Items',
       dataIndex: 'cartItems',
       key: 'subtotal',
-      render: (price: any) => `${price.length}`,
+      render: (price: any) => `${price?.length}`,
     },
     {
       title: 'Subtotal',
@@ -208,6 +222,13 @@ export const StaffSalesPage = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl">Sales Orders</h2>
         <div className="flex gap-4">
+        <Input.Search
+            placeholder="Search orders by ID or Product Name..."
+            allowClear
+            size="middle"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-80"
+          />
           <div className="flex gap-4">
             {/* Filter Type Selector */}
             <Select
@@ -277,7 +298,7 @@ export const StaffSalesPage = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={orders}
+        dataSource={filteredOrders}
         expandable={{
           expandedRowRender: expandableContent,
         }}

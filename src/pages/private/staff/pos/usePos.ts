@@ -14,7 +14,7 @@ import {
   getFirestore,
   getDocs,
 } from "firebase/firestore";
-import { message, TabsProps } from "antd";
+import { message, notification, TabsProps } from "antd";
 
 export default function usePos() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,12 +23,14 @@ export default function usePos() {
   const [paymentMethod, setPaymentMethod] = useState<string>("Cash");
   const [gcashReference, setGcashReference] = useState("");
   const [gcashCustomerInfo, setGcashCustomerInfo] = useState("");
+  const [orderSuccess, setOrderSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cart, setCart] = useState<
     { product: Product; quantity: number; img: string }[]
   >([]);
-  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
-  const [change, setChange] = useState<number | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState<number>(0);
+  const [change, setChange] = useState<number>(0);
+  const [isReceiptPrinted, setIsReceiptPrinted] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<string>("");
 
   const db = getFirestore();
@@ -88,7 +90,6 @@ export default function usePos() {
     ...categoryList,
   ];
 
-  // Handle category selection
   const handleCategoryChange = (value: string) => setSelectedCategory(value);
 
   const handleAddToCart = (product: Product) => {
@@ -111,10 +112,22 @@ export default function usePos() {
     if (quantity === null || quantity < 1) {
       handleRemoveFromCart(productId);
     } else {
-      const updatedCart = cart.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      );
-      setCart(updatedCart);
+      const updatedCart = cart.map((item) => {
+        if (item.product.id === productId) {
+          const availableStock = item.product.stock;
+          if (quantity > availableStock) {
+            notification.error({
+              message:`Cannot add more than ${availableStock} items to the cart.`
+            });
+
+            return {...item,quantity:availableStock}; // Don't update if quantity exceeds stock
+          }
+          // Update the item if the quantity is valid
+          return { ...item, quantity };
+        }
+        return item; // Return other items unchanged
+      });
+      setCart(updatedCart); // Update the cart with new quantity
     }
   };
 
@@ -141,8 +154,11 @@ export default function usePos() {
 
   // Handle payment amount change
   const handlePaymentAmountChange = (value: number | null) => {
-    setPaymentAmount(value);
-    setChange(value !== null && value >= grandTotal ? value - grandTotal : null);
+    if(value){
+      setPaymentAmount(value);
+      setChange(value !== null && value >= grandTotal ? value - grandTotal : 0);
+    }
+
   };
 
   // Process order submission
@@ -227,12 +243,12 @@ export default function usePos() {
           throw new Error(`Product ${item.product.name} not found in inventory.`);
         }
       }
-      
-
-      setCart([]);
-      setPaymentAmount(null);
-      setChange(null);
+    
       message.success("Order processed successfully!");
+      setTimeout(() => {
+        setOrderSuccess(true);
+        setIsReceiptPrinted(false)
+      }, 1000);
     } catch (error) {
       console.error("Error processing order:", error);
       message.error("Failed to process the order.");
@@ -251,6 +267,11 @@ export default function usePos() {
     setPaymentMethod,
     setGcashCustomerInfo,
     setGcashReference,
+    setIsReceiptPrinted,
+    setOrderSuccess,
+    setCart,
+    setPaymentAmount,
+    setChange,
     gcashCustomerInfo,
     gcashReference,
     items,
@@ -263,6 +284,8 @@ export default function usePos() {
     grandTotal,
     paymentAmount,
     paymentMethod,
+    isReceiptPrinted,
     change,
+    orderSuccess
   };
 }

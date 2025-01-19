@@ -85,7 +85,7 @@ export const StaffListPage = () => {
 
   const columns = [
     {
-      title: "Name",
+      title: "Profile Picture",
       key: "username",
       dataIndex:'profilePicture',
       render: (v: any) => (

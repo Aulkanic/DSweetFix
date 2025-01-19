@@ -33,9 +33,29 @@ import useStore from "../zustand/store/store";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../db";
 import { Category, Product } from "../types";
+import styled from "styled-components";
 
 const { Header, Sider, Content } = Layout;
 const LOW_STOCK_THRESHOLD = 10;
+
+const StyledSider = styled(Sider)`
+  background: #b0e0e6 !important;
+  color: black !important;
+  .ant-menu {
+    background: #b0e0e6 !important;
+    color: black !important;
+  }
+  .ant-menu-item-selected {
+    background-color: #87ceeb !important;
+    color: black !important;
+  }
+  .ant-menu-title-content,
+  .ant-menu-item-icon {
+    color: black !important;
+    font-size: 16px !important;
+  }
+`;
+
 export default function Private() {
   const user = useStore(selector("admin"));
   const navigate = useNavigate();
@@ -114,82 +134,112 @@ export default function Private() {
     />
   );
   const notificationMenu = (
-    <Menu
+    <div
       style={{
         maxHeight: "300px", // Set a maximum height for the dropdown
         overflowY: "auto", // Enable scrolling if items overflow
         padding: "10px",
+        backgroundColor: "white", // Light background for better contrast
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)", // Subtle shadow for depth
+        borderRadius: "8px",
       }}
     >
-      {lowStockProducts.length === 0 ? (
-        <Menu.Item style={{ textAlign: "center", color: "#888" }}>
-          <span>No low-stock items</span>
-        </Menu.Item>
-      ) : (
-        lowStockProducts.map((product) => (
-          <Menu.Item
-            key={product.id}
+      <h1 className="text-2xl">Notifications</h1>
+      <ul style={{background:'transparent'}} className="mt-4">
+        {lowStockProducts.length === 0 ? (
+          <li
             style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "10px",
-              borderBottom: "1px solid #f0f0f0",
+              textAlign: "center",
+              color: "#888",
+              fontWeight: "bold",
+              padding: "16px",
+              fontSize: "14px",
             }}
           >
-            {/* Product Image */}
-            {product.image ? (
-              <Avatar
-                src={product.image}
-                alt={product.name}
-                size={40}
-                style={{ marginRight: "10px" }}
-              />
-            ) : (
-              <Avatar
-                size={40}
-                style={{
-                  marginRight: "10px",
-                  backgroundColor: "#f56a00",
-                  verticalAlign: "middle",
-                }}
-              >
-                {product.name.charAt(0).toUpperCase()}
-              </Avatar>
-            )}
-            
-            {/* Product Details */}
-            <div style={{ flex: 1 }}>
-              <div
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                  color: "#333",
-                  marginBottom: "4px",
-                }}
-              >
-                {product.name}
+            <span>No low-stock items</span>
+          </li>
+        ) : (
+          lowStockProducts.map((product) => (
+            <li
+              key={product.id}
+               className="mb-4"
+            >
+              <div className="flex flex-nowrap">
+                <div>
+                  {/* Product Image */}
+                  {product.image ? (
+                    <Avatar
+                      src={product.image}
+                      alt={product.name}
+                      size={50}
+                      style={{
+                        marginRight: "16px",
+                        border: "2px solid #87d068",
+                      }}
+                    />
+                  ) : (
+                    <Avatar
+                      size={50}
+                      style={{
+                        marginRight: "16px",
+                        backgroundColor: "#f56a00",
+                        verticalAlign: "middle",
+                        fontSize: "20px",
+                      }}
+                    >
+                      {product.name.charAt(0).toUpperCase()}
+                    </Avatar>
+                  )}
+                </div>
+                <div>
+                  {/* Product Details */}
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontWeight: "600",
+                        fontSize: "16px",
+                        color: "#333",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      {product.name}
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#555" }}>
+                      Stock:{" "}
+                      <span
+                        style={{
+                          color: "#ff4d4f",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {product.stock}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#999",
+                        marginTop: "4px",
+                      }}
+                    >
+                      ⚠️ Stock is running low! Consider restocking this item
+                      soon.
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: "12px", color: "#666" }}>
-                Stock:{" "}
-                <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>
-                  {product.stock}
-                </span>
-                <div style={{ fontSize: "12px", color: "#444" }}>
-              ⚠️ Stock is running low! Consider restocking this item soon.
-            </div>
-              </div>
-            </div>
-          </Menu.Item>
-        ))
-      )}
-    </Menu>
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
   );
-  console.log(products);
+
   return !user.isAuthenticated ? (
     <Navigate replace to={RouterUrl.Login} />
   ) : (
     <Layout className="h-max min-h-screen">
-      <Sider
+      <StyledSider
         width={"20%"}
         style={{ background: "#B0E0E6" }}
         className="custom-menu"
@@ -198,10 +248,10 @@ export default function Private() {
         collapsed={collapsed}
       >
         <div className="p-4">
-          <p className="font-grand-hotel text-4xl text-white line-clamp-1">
+          <p className="font-grand-hotel text-4xl text-black line-clamp-1">
             D’ Sweet Fix
           </p>
-          <p className="text-white text-lg line-clamp-1">
+          <p className="text-black text-lg line-clamp-1">
             BAKING & CONFECTIONERY SHOP
           </p>
         </div>
@@ -298,7 +348,7 @@ export default function Private() {
             },
           ]}
         />
-      </Sider>
+      </StyledSider>
       <Layout>
         <Header
           style={{
@@ -328,24 +378,24 @@ export default function Private() {
             }}
           />
           <div className="flex gap-4 items-center">
-          <Dropdown overlay={notificationMenu} trigger={["click"]}>
-            <Badge count={lowStockProducts.length} offset={[-2, 7]}>
-              <Button
-                type="text"
-                icon={<BellOutlined style={{ fontSize: "24px" }} />}
+            <Dropdown overlay={notificationMenu} trigger={["click"]}>
+              <Badge count={lowStockProducts.length} offset={[-2, 7]}>
+                <Button
+                  type="text"
+                  icon={<BellOutlined style={{ fontSize: "24px" }} />}
+                />
+              </Badge>
+            </Dropdown>
+            <Popover
+              content={popoverContent}
+              trigger="click"
+              placement="bottomRight"
+            >
+              <Avatar
+                src={user?.info?.profilePicture}
+                style={{ cursor: "pointer", backgroundColor: "#87d068" }}
               />
-            </Badge>
-          </Dropdown>
-          <Popover
-            content={popoverContent}
-            trigger="click"
-            placement="bottomRight"
-          >
-            <Avatar
-              src={user?.info?.profilePicture}
-              style={{ cursor: "pointer", backgroundColor: "#87d068" }}
-            />
-          </Popover>
+            </Popover>
           </div>
         </Header>
         <Content

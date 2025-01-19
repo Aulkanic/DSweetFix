@@ -4,6 +4,8 @@ export interface Category {
   }
   
 export  interface Product {
+    returnDays: ReactNode;
+    returnPolicy: ReactNode;
     id: string;
     name: string;
     category: string;
