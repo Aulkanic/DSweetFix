@@ -15,8 +15,11 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { message, notification, TabsProps } from "antd";
+import useStore from "../../../../zustand/store/store";
+import { selector } from "../../../../zustand/store/store.provider";
 
 export default function usePos() {
+  const staff = useStore(selector('staff'))
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -216,6 +219,7 @@ export default function usePos() {
         change,
         paymentMethod,
         timestamp: serverTimestamp(),
+        staff:staff?.info?.id
       };
 
       const ordersCollectionRef = collection(db, "orders");

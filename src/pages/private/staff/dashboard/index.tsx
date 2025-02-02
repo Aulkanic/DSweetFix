@@ -6,12 +6,16 @@ import { Table, Card, Statistic, Row, Col, Select, DatePicker } from 'antd';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, BarChart } from 'recharts';
 import { format } from 'date-fns';
 import { Category, Order } from '../../../../types';
+import useStore from '../../../../zustand/store/store';
+import { selector } from '../../../../zustand/store/store.provider';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 export const StaffDashboard = () => {
+  const staff = useStore(selector('staff'))
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [orderCount, setOrderCount] = useState<number>(0);
+  const [staffSales, setStaffSales] = useState<number>(0);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [productData, setProductData] = useState<any[]>([]);
   const [categoryData, setCategoryData] = useState<any[]>([]);
@@ -44,6 +48,11 @@ export const StaffDashboard = () => {
         (sum, order: any) => Number(sum) + (Number(order.grandTotal) || 0),
         0
       );
+      const totalStaffSale = ordersList?.filter((v:any) => v.staff === staff.info.id)?.reduce(
+        (sum, order: any) => Number(sum) + (Number(order.grandTotal) || 0),
+        0
+      );
+      setStaffSales(totalStaffSale)
       setTotalIncome(totalIncomeValue);
       setOrderCount(ordersList.length);
 
@@ -175,7 +184,7 @@ export const StaffDashboard = () => {
           )}
         </Col>
       </Row>
-      <Row gutter={16} className="mb-4">
+      <Row gutter={24} className="mb-4">
         <Col span={8}>
           <Card>
             <Statistic title="Total Income" value={totalIncome} prefix="₱" />
@@ -184,6 +193,11 @@ export const StaffDashboard = () => {
         <Col span={8}>
           <Card>
             <Statistic title="Number of Orders" value={orderCount} />
+          </Card>
+        </Col>
+        <Col span={8}>
+        <Card>
+            <Statistic title="Your Total Sale" value={staffSales} prefix="₱" />
           </Card>
         </Col>
       </Row>
