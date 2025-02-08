@@ -149,10 +149,10 @@ export const AdminHomepage = () => {
 
   const columns = [
     {
-      title: "Order ID",
-      dataIndex: "id",
+      title: "Transaction Code",
+      dataIndex: "transactionCode",
       key: "id",
-      render: (id: string) => id.substring(0, 6),
+      render: (id: string) => id.substring(0, 8),
     },
     {
       title: "Subtotal",

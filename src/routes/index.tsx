@@ -13,5 +13,6 @@ export const RouterUrl = {
     Sales:'/Dashboard/Staff/Sales',
     AdminSales:'/Dashboard/Sales',
     Reports:'/Dashboard/Reports',
-    Income:'/Dashboard/Income_Summary'
+    Income:'/Dashboard/Income_Summary',
+    StaffSales:'/Dashboard/Sales/By/Staff'
 }

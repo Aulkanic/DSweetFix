@@ -17,6 +17,7 @@ import {
 import { message, notification, TabsProps } from "antd";
 import useStore from "../../../../zustand/store/store";
 import { selector } from "../../../../zustand/store/store.provider";
+import { generateTransactionCode } from "../../../../utils/utils";
 
 export default function usePos() {
   const staff = useStore(selector('staff'))
@@ -200,17 +201,22 @@ export default function usePos() {
         setLoading(false);
         return;
       }
-
+      const transactionCode = cart.length
+      ? generateTransactionCode(
+          categories.find((cat) => cat.id === cart[0].product.category)?.name || "GEN"
+        )
+      : "GEN-00000";
+      const d =cart.map((item) => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price,
+        category: categories.find((cat) => cat.id === item.product.category)
+          ?.name,
+        total: item.quantity * item.product.price,
+      }))
       const orderData = {
-        cartItems: cart.map((item) => ({
-          productId: item.product.id,
-          productName: item.product.name,
-          quantity: item.quantity,
-          price: item.product.price,
-          category: categories.find((cat) => cat.id === item.product.category)
-            ?.name,
-          total: item.quantity * item.product.price,
-        })),
+        cartItems:d,
         subtotal,
         grandTotal,
         gcashCustomerInfo,
@@ -219,7 +225,8 @@ export default function usePos() {
         change,
         paymentMethod,
         timestamp: serverTimestamp(),
-        staff:staff?.info?.id
+        staff:staff?.info?.id,
+        transactionCode
       };
 
       const ordersCollectionRef = collection(db, "orders");

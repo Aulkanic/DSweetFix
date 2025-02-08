@@ -4,6 +4,7 @@ import { Private, Public } from './layout'
 import { RouterUrl } from './routes'
 import { AdminHomepage, AdminReportsPage, AdminSalesPage, CategoryListPage, CreateCategoryPage, CreateInventoryPage, CreateStaffPage, InventoryListPage, LoginPage, PointofSalePage, StaffDashboard, StaffInventoryPage, StaffListPage, StaffSalesPage } from './pages'
 import StaffSide from './layout/staff'
+import SaleStaff from './pages/private/admin/salesStaff'
 
 function App() {
   const router = createBrowserRouter([
@@ -27,6 +28,7 @@ function App() {
         { path: RouterUrl.InventoryList, element:<InventoryListPage />},
         { path: RouterUrl.AdminSales, element:<AdminSalesPage />},
         { path: RouterUrl.Reports, element:<AdminReportsPage />},
+        { path: RouterUrl.StaffSales, element:<SaleStaff />},
       
       ]
     },

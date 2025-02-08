@@ -339,6 +339,11 @@ export default function Private() {
                   label: "Reports",
                   icon: <TbReportSearch />,
                 },
+                {
+                  key: RouterUrl.StaffSales,
+                  label: "Staff Sales",
+                  icon: <TbReportSearch />,
+                },
                 // {
                 //   key: RouterUrl.Income,
                 //   label: "Income",

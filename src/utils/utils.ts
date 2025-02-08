@@ -82,9 +82,15 @@ const applyDiscount = (item: any) => {
   return {price:item.UNIT_PRICE,isDiscounted:false};
 };
 
+const generateTransactionCode = (category: string) => {
+  const prefix = category.replace(/\s+/g, "").toUpperCase().slice(0, 3);
+  return `${prefix}-${Math.floor(Math.random() * 100000)}`;
+};
+
 export {
   currencyFormat,
   dateFormatter,
+  generateTransactionCode,
   executeOnProcess,
   useDebounce,
   timeFormatter,

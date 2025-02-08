@@ -10,6 +10,7 @@ import {
   orderBy,
   query,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import {
   Table,
@@ -26,13 +27,14 @@ import {
   Card,
 } from "antd";
 import { format } from "date-fns";
-import { currencyFormat } from "../../../../utils/utils";
+import { currencyFormat, generateTransactionCode } from "../../../../utils/utils";
 import { saveAs } from "file-saver";
 import dayjs, { Dayjs } from "dayjs";
 
 const { Option } = Select;
 
 interface Order {
+  transactionCode: any;
   id: string;
   cartItems: any[];
   subtotal: number;
@@ -75,7 +77,26 @@ export const AdminSalesPage = () => {
           ordersCollectionRef,
           orderBy("timestamp", "desc")
         );
+
         const ordersSnapshot = await getDocs(ordersQuery);
+       await Promise.all(
+          ordersSnapshot.docs.map(async (docSnapshot) => {
+            const data = docSnapshot.data() as Order;
+            if (!data.transactionCode && data.cartItems?.length) {
+              let g='';
+              for(const d of data.cartItems){
+                if(d.category){
+                  g += generateTransactionCode(d.category)
+                }
+               
+              }
+              const transactionCode = g
+              await updateDoc(doc(db, "orders", docSnapshot.id), { transactionCode });
+              return { ...data, transactionCode, id: docSnapshot.id };
+            }
+            return { ...data, id: docSnapshot.id };
+          })
+        );
         const ordersList: Order[] = ordersSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -119,11 +140,16 @@ export const AdminSalesPage = () => {
     });
   };
 
+  const generateTransactionCode = () => {
+    return `TXN-${Math.floor(Math.random() * 100000)}`;
+  };
   // Add new sale
   const addSale = async (values: any) => {
     try {
+      const transactionCode = generateTransactionCode();
       const newOrder = {
         ...values,
+        transactionCode,
         timestamp: Timestamp.fromDate(new Date()),
         cartItems: Array(values.totalItems).fill({}),
       };
@@ -206,10 +232,10 @@ export const AdminSalesPage = () => {
 
   const columns = [
     {
-      title: "Order ID",
-      dataIndex: "id",
+      title: "Transaction Code",
+      dataIndex: 'transactionCode',
       key: "id",
-      render: (id: string) => id.substring(0, 6),
+      render: (id: string) => id.substring(0, 8),
     },
     {
       title: "Total Items",
