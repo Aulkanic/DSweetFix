@@ -113,7 +113,7 @@ export const StaffSalesPage = () => {
       title: "Transaction Code",
       dataIndex: 'transactionCode',
       key: "id",
-      render: (id: string) => id.substring(0, 8),
+      render: (id: string) => id?.substring(0, 8),
     },
     {
       title: 'Total Items',

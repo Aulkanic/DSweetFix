@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
 import { Table, Card, Statistic, Row, Col, Select, DatePicker } from 'antd';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, BarChart } from 'recharts';
 import { format } from 'date-fns';
 import { Category, Order } from '../../../../types';
+import { generateTransactionCode } from '../../../../utils/utils';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -63,7 +64,24 @@ export const AdminHomepage = () => {
       );
       setTotalIncome(totalIncomeValue);
       setOrderCount(ordersList.length);
-
+      await Promise.all(
+         ordersSnapshot.docs.map(async (docSnapshot) => {
+           const data = docSnapshot.data() as Order;
+           if (!data.transactionCode && data.cartItems?.length) {
+             let g='';
+             for(const d of data.cartItems){
+               if(d.category){
+                 g += generateTransactionCode(d.category)
+               }
+              
+             }
+             const transactionCode = g
+             await updateDoc(doc(db, "orders", docSnapshot.id), { transactionCode });
+             return { ...data, transactionCode, id: docSnapshot.id };
+           }
+           return { ...data, id: docSnapshot.id };
+         })
+       );
       const recentOrdersList = ordersList
       .sort((a:any, b:any) => {
         const timeA = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0; // Check if `toDate` exists
@@ -152,7 +170,7 @@ export const AdminHomepage = () => {
       title: "Transaction Code",
       dataIndex: "transactionCode",
       key: "id",
-      render: (id: string) => id.substring(0, 8),
+      render: (id: string) => id?.substring(0, 8),
     },
     {
       title: "Subtotal",

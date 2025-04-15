@@ -73,7 +73,7 @@ export const AdminReportsPage = () => {
         // Calculate product sales
         const productSales: { [key: string]: number } = {};
         filteredOrders.forEach((order) => {
-          order.cartItems.forEach((item: any) => {
+          order.cartItems?.forEach((item: any) => {
             productSales[item.productName] =
               (productSales[item.productName] || 0) + item.quantity * item.price;
           });
@@ -98,7 +98,7 @@ export const AdminReportsPage = () => {
         const categoryCounts: { [key: string]: number } = {};
         filteredOrders.forEach((order) => {
           console.log(order)
-          order.cartItems.forEach((item: any) => {
+          order.cartItems?.forEach((item: any) => {
             if (!item.category) return; // Skip items without a valid categoryId
             const matchedCategory = categoriesList.find((cat) => cat.name === item.category);
             if (matchedCategory) {

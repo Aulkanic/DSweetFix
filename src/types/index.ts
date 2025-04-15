@@ -18,8 +18,10 @@ export  interface Product {
   }
   
  export interface Order {
+    transactionCode: any;
     id: string;
     cartItems: Array<{
+      category: any;
       productId: string;
       productName: string;
       quantity: number;

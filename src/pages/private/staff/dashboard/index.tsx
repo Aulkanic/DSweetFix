@@ -68,7 +68,7 @@ export const StaffDashboard = () => {
 
       const productSales: { [key: string]: number } = {};
       ordersList.forEach((order) => {
-        order.cartItems.forEach((item: any) => {
+        order.cartItems?.forEach((item: any) => {
           if (item.productName) {
             productSales[item.productName] =
               (productSales[item.productName] || 0) +
@@ -92,7 +92,7 @@ export const StaffDashboard = () => {
 
       const categoryCounts: { [key: string]: number } = {};
       ordersList.forEach((order) => {
-        order.cartItems.forEach((item: any) => {
+        order.cartItems?.forEach((item: any) => {
           const category = categoriesList.find(
             (v: Category) => v.name === item.category
           )?.name;
