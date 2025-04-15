@@ -143,7 +143,6 @@ export const AdminSalesPage = () => {
   const generateTransactionCodes = () => {
     return `TXN-${Math.floor(Math.random() * 100000)}`;
   };
-  // Add new sale
   const addSale = async (values: any) => {
     try {
       const transactionCode = generateTransactionCodes();
